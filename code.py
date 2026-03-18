@@ -32,5 +32,5 @@ class BotHunterUltimate(QMainWindow):
         self.profile = QWebEngineProfile.defaultProfile()
         
         # USER AGENT DATABASE (Every OS)
-        self.ua_map = {
+        self.ua_map = {}
             "Linux (Default)": self.profile.http

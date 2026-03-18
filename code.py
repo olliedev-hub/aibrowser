@@ -1,54 +1,36 @@
-from PyQt6.QtWebEngineCore import QWebEngineSettings
+import sys
+import os
 
-# --- Add this to your MainWindow __init__ ---
+# 1. THE GPU POWERHOUSE (VULKAN & SKIA)
+# Setting these before QApplication starts to prevent crashes
+os.environ["QT_QUICK_BACKEND"] = "vulkan"
+os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = (
+    "--enable-features=Vulkan,VulkanFromANGLE,SkiaGraphite "
+    "--use-vulkan --enable-gpu-rasterization --ignore-gpu-blocklist "
+    "--disable-software-rasterizer"
+)
 
-# 1. User Agent Switcher
-self.ua_selector = QComboBox()
-self.ua_map = {
-    "Default": self.profile.httpUserAgent(),
-    "Windows/Chrome": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-    "iPhone/Safari": "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
-    "Android/Pixel": "Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36"
-}
-self.ua_selector.addItems(self.ua_map.keys())
-self.ua_selector.currentIndexChanged.connect(self.change_user_agent)
-self.navbar.addWidget(self.ua_selector)
+# Linux Sandbox Fix for Chromebooks
+if sys.platform.startswith("linux"):
+    os.environ["QTWEBENGINE_DISABLE_SANDBOX"] = "1"
 
-# 2. HTML Settings Toggles
-self.js_toggle = QCheckBox("JS")
-self.js_toggle.setChecked(True)
-self.js_toggle.stateChanged.connect(self.update_html_settings)
-self.navbar.addWidget(self.js_toggle)
+from PyQt6.QtWidgets import (
+    QApplication, QMainWindow, QTabWidget, QToolBar, 
+    QLineEdit, QPushButton, QCheckBox, QComboBox, QVBoxLayout, QWidget, QLabel
+)
+from PyQt6.QtCore import QUrl, Qt
+from PyQt6.QtWebEngineWidgets import QWebEngineView
+from PyQt6.QtWebEngineCore import QWebEngineProfile, QWebEnginePage, QWebEngineSettings
 
-self.img_toggle = QCheckBox("IMG")
-self.img_toggle.setChecked(True)
-self.img_toggle.stateChanged.connect(self.update_html_settings)
-self.navbar.addWidget(self.img_toggle)
+class BotHunterUltimate(QMainWindow):
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("Bot Hunter - Ultimate Workstation")
+        self.resize(1366, 768)
 
-# --- New Methods inside BotHunterBrowser class ---
-
-def change_user_agent(self):
-    label = self.ua_selector.currentText()
-    new_ua = self.ua_map[label]
-    # This changes it for the WHOLE profile (all tabs)
-    self.profile.setHttpUserAgent(new_ua)
-    self.tabs.currentWidget().reload()
-
-def update_html_settings(self):
-    # Get the settings object for the current profile
-    settings = self.profile.settings()
-    
-    # Toggle JavaScript
-    settings.setAttribute(
-        QWebEngineSettings.WebAttribute.JavascriptEnabled, 
-        self.js_toggle.isChecked()
-    )
-    
-    # Toggle Auto-loading Images
-    settings.setAttribute(
-        QWebEngineSettings.WebAttribute.AutoLoadImages, 
-        self.img_toggle.isChecked()
-    )
-    
-    # Reload to apply
-    self.tabs.currentWidget().reload()
+        # CORE PROFILE SETUP
+        self.profile = QWebEngineProfile.defaultProfile()
+        
+        # USER AGENT DATABASE (Every OS)
+        self.ua_map = {
+            "Linux (Default)": self.profile.http

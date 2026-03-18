@@ -32,5 +32,9 @@ class BotHunterUltimate(QMainWindow):
         self.profile = QWebEngineProfile.defaultProfile()
         
         # USER AGENT DATABASE (Every OS)
-        self.ua_map = {}
-    "Linux (Default)": self.profile.http
+        # Example: adding multiple user agents
+self.ua_map = {
+    "Linux (Default)": self.profile.httpUserAgent(),
+    "Windows": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)...",
+    "Mac": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)..."
+}

@@ -1,5 +1,18 @@
-import sys
 import os
+import sys
+
+# Forces the Qt UI layer to use Vulkan
+os.environ["QT_QUICK_BACKEND"] = "vulkan"
+
+# Forces Chromium to use Vulkan for everything
+os.environ["QTWEBENGINE_CHROMIUM_FLAGS"] = (
+    "--enable-features=Vulkan,VulkanFromANGLE,SkiaGraphite "
+    "--use-vulkan "
+    "--enable-gpu-rasterization "
+    "--ignore-gpu-blocklist "
+    "--disable-software-rasterizer"
+)
+
 from PyQt6.QtWidgets import (
     QApplication, 
     QMainWindow, 

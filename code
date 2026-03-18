@@ -1,3 +1,29 @@
+# Add these imports at the top
+from PyQt6.QtWidgets import QCheckBox
+
+# Inside your __init__, add these to the navbar:
+self.cpu_saver = QCheckBox("CPU Saver")
+self.mem_saver = QCheckBox("Mem Saver")
+self.cpu_saver.setStyleSheet("color: #8ab4f8; font-size: 10px;")
+self.mem_saver.setStyleSheet("color: #8ab4f8; font-size: 10px;")
+
+self.navbar.addSeparator()
+self.navbar.addWidget(self.cpu_saver)
+self.navbar.addWidget(self.mem_saver)
+
+# Connect the tab change signal to trigger the saver
+self.tabs.currentChanged.connect(self.manage_tab_lifecycle)
+
+def manage_tab_lifecycle(self, index):
+    for i in range(self.tabs.count()):
+        browser = self.tabs.widget(i)
+        if i == index:
+            browser.page().setLifecycleState(QWebEnginePage.LifecycleState.Active)
+        else:
+            if self.mem_saver.isChecked():
+                browser.page().setLifecycleState(QWebEnginePage.LifecycleState.Discarded)
+            elif self.cpu_saver.isChecked():
+                browser.page().setLifecycleState(QWebEnginePage.LifecycleState.Frozen)
 import os
 import sys
 
